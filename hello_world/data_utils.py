@@ -48,3 +48,19 @@ def histogram_data(series: pd.Series, bins: int = 10) -> pd.DataFrame:
 def category_counts(series: pd.Series, top: int = 20) -> pd.DataFrame:
     """Count each distinct value. Keeps the 20 most common."""
     return series.value_counts().head(top).to_frame("count")
+
+def duplicate_count(df: pd.DataFrame) -> int:
+    """How many rows are exact copies of an earlier row."""
+    return int(df.duplicated().sum())
+
+
+def numeric_text_columns(df: pd.DataFrame, min_share: float = 0.8) -> list:
+    """Text columns whose values are mostly numbers, like '1,928'. These have the wrong type."""
+    found = []
+    for col in df.columns:
+        if pd.api.types.is_numeric_dtype(df[col]):
+            continue
+        text = df[col].dropna().astype(str).str.replace(",", "", regex=False)
+        if len(text) and pd.to_numeric(text, errors="coerce").notna().mean() >= min_share:
+            found.append(col)
+    return found
