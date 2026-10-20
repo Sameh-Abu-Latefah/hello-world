@@ -90,6 +90,9 @@ def fit_fill_values(train: pd.DataFrame, strategies: dict) -> dict:
         col: train[col].median() if how == "median" else how
         for col, how in strategies.items()
     }
+def apply_fill_values(df: pd.DataFrame, values: dict) -> pd.DataFrame:
+    """Fill the empty cells with the values learned on train. Works on train and on test."""
+    return df.fillna(values)
 
 def fit_encoder(train: pd.DataFrame, columns: list) -> dict:
     """The categories each column has in train. Learned from train only."""
@@ -107,6 +110,48 @@ def apply_encoder(df: pd.DataFrame, categories: dict) -> pd.DataFrame:
 def drop_missing_rows(df: pd.DataFrame, columns: list = None) -> pd.DataFrame:
     """Drop rows that have an empty cell in the given columns (all columns if none given)."""
     return df.dropna(subset=columns).reset_index(drop=True)
+
+def prepare_data(df: pd.DataFrame, target: str = "churned",
+                 test_size: float = 0.2, seed: int = 42) -> tuple:
+    """Run every cleaning step in the safe order and return (train, test).
+
+    1. Fixed rules on all rows: duplicates, text, numbers, impossible ages.
+    2. Split.
+    3. Learn from train only (outlier bounds, fill values, scaler, encoder), apply to both.
+    """
+    df = remove_duplicates(df)
+    if "plan" in df.columns:
+        df = clean_text(df, ["plan"])
+    if "gender" in df.columns:
+        df = normalize_gender(df)
+    if "income" in df.columns:
+        df["income"] = to_number(df["income"])
+    if "age" in df.columns:
+        df = mark_invalid_ages(df)
+
+    train, test = split_data(df, target, test_size, seed)
+
+    if "income" in train.columns:
+        bounds = fit_income_bounds(train)
+        train = mark_income_outliers(train, bounds)
+        test = mark_income_outliers(test, bounds)
+
+    features = [c for c in train.columns if c != target]
+    numbers = [c for c in features if pd.api.types.is_numeric_dtype(train[c])]
+    texts = [c for c in features if c not in numbers]
+
+    strategies = {c: "median" for c in numbers}
+    strategies.update({c: "Unknown" for c in texts})
+    fill_values = fit_fill_values(train, strategies)
+    train = apply_fill_values(train, fill_values)
+    test = apply_fill_values(test, fill_values)
+
+    scaler = fit_scaler(train, numbers)
+    train = apply_scaler(train, scaler)
+    test = apply_scaler(test, scaler)
+
+    encoder = fit_encoder(train, texts)
+    return apply_encoder(train, encoder), apply_encoder(test, encoder)
 
 
 
