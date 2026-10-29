@@ -4,11 +4,19 @@ import pandas as pd
 import streamlit as st
 
 from hello_world.cleaning import (
-    clean_text, drop_missing_rows, mark_invalid_ages, normalize_gender,
-    remove_duplicates, split_data, to_number,
+    clean_text,
+    drop_missing_rows,
+    mark_invalid_ages,
+    normalize_gender,
+    remove_duplicates,
+    split_data,
+    to_number,
 )
 from hello_world.data_utils import (
-    duplicate_count, load_csv, missing_values, numeric_text_columns,
+    duplicate_count,
+    load_csv,
+    missing_values,
+    numeric_text_columns,
 )
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "messy_customers.csv"

@@ -1,10 +1,14 @@
 import streamlit as st
-import pandas as pd
 
 from hello_world.data_utils import (
-    load_csv, column_types, missing_values, numeric_columns,
-    histogram_data, category_counts,
+    category_counts,
+    column_types,
+    histogram_data,
+    load_csv,
+    missing_values,
+    numeric_columns,
 )
+
 st.set_page_config(page_title="Data Explorer", layout="wide")
 st.title("Data Explorer")
 

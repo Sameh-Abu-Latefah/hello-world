@@ -107,7 +107,7 @@ def apply_encoder(df: pd.DataFrame, categories: dict) -> pd.DataFrame:
             out[f"{col}_{category}"] = (out[col] == category).astype(int)
         out = out.drop(columns=col)
     return out
-def drop_missing_rows(df: pd.DataFrame, columns: list = None) -> pd.DataFrame:
+def drop_missing_rows(df: pd.DataFrame, columns: list | None = None) -> pd.DataFrame:
     """Drop rows that have an empty cell in the given columns (all columns if none given)."""
     return df.dropna(subset=columns).reset_index(drop=True)
 

@@ -1,5 +1,6 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 
 def load_csv(file) -> pd.DataFrame:
     """Read a CSV and return a DataFrame. Raise ValueError with a clear message if it fails."""

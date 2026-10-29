@@ -1,10 +1,8 @@
 import pandas as pd
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
-
+from sklearn.tree import DecisionTreeClassifier
 
 
 def train_decision_tree(X_train, y_train, max_depth: int = 3) -> DecisionTreeClassifier:

@@ -1,20 +1,19 @@
 import pandas as pd
 
-import pandas as pd
-
 from hello_world.cleaning import (
+    apply_encoder,
     clean_text,
     find_income_outliers,
+    fit_encoder,
+    fit_fill_values,
     fit_income_bounds,
     mark_income_outliers,
+    normalize_gender,
     remove_duplicates,
     split_data,
     to_number,
-    normalize_gender,
-    fit_fill_values,
-    fit_encoder,
-    apply_encoder
 )
+
 
 def test_remove_duplicates_keeps_one_copy():
     df = pd.DataFrame({"a": [1, 1, 2], "b": ["x", "x", "y"]})

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from hello_world.cleaning import prepare_data
@@ -12,12 +11,6 @@ from hello_world.training import (
     train_logistic_regression,
     train_random_forest,
 )
-from pathlib import Path
-
-import streamlit as st
-
-from hello_world.cleaning import prepare_data
-from hello_world.data_utils import load_csv
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "messy_customers.csv"
 
