@@ -1,0 +1,36 @@
+id,comment,label,prediction
+1,The delivery was faster than I expected.,positive,positive
+2,The app crashes every time I open my orders.,negative,negative
+3,The package arrived on Tuesday.,neutral,neutral
+4,"Great quality for the price, I will order again.",positive,positive
+5,Support never replied to my email.,negative,negative
+6,It does what it says. Nothing more.,neutral,neutral
+7,The screen is beautiful but the battery dies by noon.,neutral,neutral
+8,Worst purchase I have made this year.,negative,negative
+9,Setup took five minutes and everything worked.,positive,positive
+10,"Not bad, not great.",neutral,neutral
+11,The staff were friendly and solved my problem quickly.,positive,positive
+12,I waited two weeks and the item never arrived.,negative,negative
+13,I received the invoice by email.,neutral,neutral
+14,"Excellent service, highly recommended.",positive,positive
+15,The size is smaller than the photos show.,negative,negative
+16,"Packaging was fine, the product is average.",neutral,neutral
+17,Best app I have used for tracking orders.,positive,positive
+18,They charged me twice and refused to refund.,negative,negative
+19,Okay for the price.,neutral,neutral
+20,Everything works perfectly after the update.,positive,positive
+21,The website is slow and keeps logging me out.,negative,negative
+22,I ordered the blue one and got the blue one.,neutral,neutral
+23,"Love the design, very easy to use.",positive,positive
+24,Customer service was rude and unhelpful.,negative,negative
+25,"Fast shipping, but the box was damaged.",neutral,neutral
+26,Totally worth the money.,positive,positive
+27,The product stopped working after two days.,negative,negative
+28,I will see how it performs over the next weeks.,neutral,neutral
+29,Impressed by how quickly they fixed the issue.,positive,positive
+30,Would not recommend to anyone.,negative,negative
+31,"Great, it broke on 30 day .",negative,negative
+32,"Oh great, another update that erases my settings.",negative,negative
+33,"Wow, only took three tries to log in. Amazing.",negative,positive
+34,"Not bad at all, I would buy it again.",positive,positive
+35,I can't say I'm disappointed.,positive,positive
