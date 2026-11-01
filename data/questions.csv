@@ -1,0 +1,12 @@
+id,question,expected_source,key_phrase
+1,How do I add a package that is only needed while developing?,managing-dependencies.md,poetry add pytest --group test
+2,"My teammates and I work on the same Python project, but the code works on one machine and breaks on another. How do we make everyone get the same setup?",basic-usage.md,exact same versions of the dependencies
+3,How do I submit a bug report?,contributing.md,Bugs concerning Poetry and poetry-core
+4,How do I make my environment match the lock file exactly and remove anything extra?,managing-dependencies.md,are the only ones present
+5,How can I make Poetry keep the virtual environment folder inside my project directory?,configuration.md,Create the virtualenv inside the project's root directory
+6,"Every time I change one source file, Docker reinstalls all my third-party packages. How do I avoid that?",faq.md,poetry install --only main --no-root --no-directory
+7,How do I log in to PyPI with an API token instead of a password?,repositories.md,poetry config pypi-token.pypi
+8,What command do I run in PowerShell to install Poetry on Windows?,_index.md,UseBasicParsing
+9,"When should I use extras instead of a dependency group, and who can install them?",managing-dependencies.md,Extras can be installed by the end user using
+10,Can Poetry automatically generate API documentation for my project?,,
+11,How do I deploy my Poetry project to AWS Lambda?,,

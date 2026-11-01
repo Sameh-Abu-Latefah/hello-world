@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 from similarity import cosine_similarity
 
 MODEL_NAME = "all-MiniLM-L6-v2"
