@@ -1,0 +1,161 @@
+id,question,expected_source,key_phrase,answer,retrieved_sources,retrieval_hit
+1,How do I add a package that is only needed while developing?,managing-dependencies.md,poetry add pytest --group test,"Add it as a **development‑only** dependency (a dev‑dependency).  
+In Poetry you do this with the `add` command and the dev group flag:
+
+```bash
+poetry add --group dev <package-name>
+# or, with older Poetry versions:
+poetry add --dev <package-name>
+```
+
+The package will be listed under `[tool.poetry.dev-dependencies]` and is only installed for development, not for end‑users [3].",cli.md;building-extension-modules.md;managing-dependencies.md;pyproject.md;libraries.md,False
+2,"My teammates and I work on the same Python project, but the code works on one machine and breaks on another. How do we make everyone get the same setup?",basic-usage.md,exact same versions of the dependencies,"Commit the **`poetry.lock`** file to your repository so every teammate installs the exact same dependency versions — the lock file only affects the main project, not libraries that depend on it [1].  
+
+Add a Python version constraint in `pyproject.toml` (e.g. `requires-python = "">=3.9""`), then each developer runs:
+
+```bash
+poetry install          # creates/uses a virtual env and installs the locked deps
+```
+
+Poetry will create an isolated virtual environment (or reuse an existing one) that is separate from the global Python installation [3].  
+
+If you need a specific interpreter, tell Poetry which one to use:
+
+```bash
+poetry env use /path/to/python3.x
+```
+
+With the lock file committed and everyone running `poetry install` in the same project directory, all machines will have identical package versions and a consistent environment. [4]",libraries.md;contributing.md;managing-environments.md;basic-usage.md;cli.md,False
+3,How do I submit a bug report?,contributing.md,Bugs concerning Poetry and poetry-core,"To report a bug in Poetry, follow these steps:
+
+1. **Open an issue** in the main Poetry issue tracker and select the **bug‑report template**【4†L1-L4】.  
+2. **Title** – use a clear, descriptive title that identifies the problem【4†L5-L6】.  
+3. **Description** – include:
+   * Exact steps you performed (ideally in a clean container/VM)【4†L7-L9】.  
+   * The behavior you observed after those steps【4†L10-L11】.  
+   * The behavior you expected instead and why it matters【4†L12-L13】.  
+4. If the bug raises an error, run the failing command in **debug mode** with the `-vvv` flag and include the full output【4†L14-L15】.  
+
+Example command with debug output:
+
+```bash
+poetry install -vvv
+```
+
+Providing this information makes it easier for maintainers to reproduce and fix the issue.",contributing.md;contributing.md;contributing.md;contributing.md;contributing.md,True
+4,How do I make my environment match the lock file exactly and remove anything extra?,managing-dependencies.md,are the only ones present,"Use Poetry’s **sync** command, which installs exactly the versions locked in `poetry.lock` and removes any packages that aren’t listed there:
+
+```bash
+poetry sync
+```
+
+You can also combine it with group‑related options to sync specific dependency groups if needed【1】.",managing-dependencies.md;configuration.md;cli.md;basic-usage.md;managing-environments.md,True
+5,How can I make Poetry keep the virtual environment folder inside my project directory?,configuration.md,Create the virtualenv inside the project's root directory,"Set the **`virtualenvs.in-project`** option to `true`.  
+You can do this either with the environment variable or with Poetry’s config command:
+
+```bash
+# using the config command (project‑local)
+poetry config virtualenvs.in-project true --local
+```
+
+or set the environment variable:
+
+```bash
+export POETRY_VIRTUALENVS_IN_PROJECT=true
+```
+
+When this option is `true`, Poetry creates (or expects) the virtual environment in a `.venv` folder inside the project root [1].  
+
+If a virtualenv already exists in the global cache, delete it first (e.g., `poetry env remove <python>` or remove the folder under `{cache-dir}/virtualenvs`) so Poetry will create the new local one [2].",configuration.md;configuration.md;configuration.md;basic-usage.md;_index.md,True
+6,"Every time I change one source file, Docker reinstalls all my third-party packages. How do I avoid that?",faq.md,poetry install --only main --no-root --no-directory,"Split the Docker build into two layers: first copy only the lock files and install the dependencies, then copy the source code and install just the package itself.  
+Use Poetry’s `--no‑root` (or `--no‑directory`) option so the install step doesn’t reinstall your own code each time.
+
+```dockerfile
+FROM python:3.11
+
+# 1️⃣ Install only third‑party deps
+COPY pyproject.toml poetry.lock .
+RUN pip install poetry && poetry install --no-root   # or `poetry sync --no-root` [3][4]
+
+# 2️⃣ Add the source and install the package
+COPY src/ ./src
+RUN poetry install --no-directory   # installs the root package only
+```
+
+By copying the lock files before the source and using `--no-root`, changes in `src/` won’t bust the cache for the heavy dependency layer. [1][2][3][4]",faq.md;faq.md;cli.md;cli.md;cli.md,False
+7,How do I log in to PyPI with an API token instead of a password?,repositories.md,poetry config pypi-token.pypi,"Use Poetry’s token‑based credential setting instead of a username/password. Run:
+
+```bash
+poetry config pypi-token.pypi <your‑api‑token>
+```
+
+(For Test PyPI use `pypi-token.testpypi` instead.) This stores the token and Poetry will use it when publishing to PyPI [1].",repositories.md;repositories.md;repositories.md;repositories.md;repositories.md,True
+8,What command do I run in PowerShell to install Poetry on Windows?,_index.md,UseBasicParsing,"Run the installer script with PowerShell:
+
+```powershell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+```
+
+*(If you installed Python from the Microsoft Store, replace `py` with `python`.)*【1】",_index.md;_index.md;_index.md;_index.md;_index.md,True
+9,"When should I use extras instead of a dependency group, and who can install them?",managing-dependencies.md,Extras can be installed by the end user using,"Use **extras** for optional runtime features that you want end‑users to be able to add on when they install your package (e.g., `pip install mypkg[extra]`). Extras are defined in the `tool.poetry.extras` table and are installed with `pip` or with Poetry’s `-E/--extras` flag — they are meant for functionality that the package can provide at runtime [1][3].
+
+Use **dependency groups** for sets of packages that are only needed during development or for specific tooling (docs, tests, etc.). These groups are declared under `tool.poetry.group.<name>` and can only be installed via Poetry commands such as `poetry install --with docs` or `poetry install --only test` [1][3].
+
+**Who can install them**
+
+* **Extras:** Any end‑user can install them (e.g., `pip install mypkg[extra]` or `poetry install -E extra`). [1][3]  
+* **Dependency groups:** Only developers using Poetry can install them, using the `--with`, `--only`, or `--all-groups` options. [1][3]",managing-dependencies.md;cli.md;managing-dependencies.md;managing-dependencies.md;pyproject.md,True
+10,Can Poetry automatically generate API documentation for my project?,,,"Poetry does not generate API documentation for you. It is a tool for **dependency management** and **packaging** (it handles declaring, installing, locking and building your project) but it does not include a feature to create API docs — you’d need a separate documentation tool such as Sphinx or MkDocs for that [2].",contributing.md;_index.md;repositories.md;repositories.md;contributing.md,
+11,How do I deploy my Poetry project to AWS Lambda?,,,"Deploying a Poetry‑managed project to AWS Lambda is easiest with a Lambda container image:
+
+1. **Start from the official Lambda Python base image** (Python 3.9+ is required)【4】.  
+2. **Install Poetry** inside the image – you can use the official installer script【2】.  
+3. **Copy only the lock files first** and install the dependencies without the project source (so the image layers are cached)【3】.  
+4. **Copy the source code** and run a final `poetry install` to add the project itself.  
+
+**Example Dockerfile**
+
+```dockerfile
+# 1️⃣ Lambda base image (Python 3.9)
+FROM public.ecr.aws/lambda/python:3.9
+
+# 2️⃣ Install Poetry (installer script)
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# 3️⃣ Add Poetry to PATH
+ENV PATH=""/root/.local/bin:${PATH}""
+
+# 4️⃣ Copy lock files and install only runtime deps
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --only main --no-root --no-directory   # skips project source & local dirs【3】
+
+# 5️⃣ Copy the application code
+COPY src/ ./src
+
+# 6️⃣ Install the project itself
+RUN poetry install --only main
+
+# 7️⃣ Set the Lambda handler (adjust to your module)
+CMD [""src.my_handler.handler""]
+```
+
+**Build & push**
+
+```bash
+docker build -t my‑lambda‑app .
+docker tag my‑lambda‑app <account-id>.dkr.ecr.<region>.amazonaws.com/my‑lambda‑app:latest
+aws ecr get-login-password | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<region>.amazonaws.com
+docker push <account-id>.dkr.ecr.<region>.amazonaws.com/my‑lambda‑app:latest
+```
+
+**Create the Lambda function**
+
+```bash
+aws lambda create-function \
+  --function-name my‑lambda‑app \
+  --package-type Image \
+  --code ImageUri=<account-id>.dkr.ecr.<region>.amazonaws.com/my‑lambda‑app:latest \
+  --role arn:aws:iam::<account-id>:role/<lambda‑execution‑role>
+```
+
+This uses Poetry to manage dependencies, keeps the image layers cache‑friendly, and produces a container image that AWS Lambda can run directly.",contributing.md;_index.md;faq.md;_index.md;libraries.md,
